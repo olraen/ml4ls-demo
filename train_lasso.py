@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -28,7 +28,6 @@ genes = data_bmi.columns.drop(["id", "BMI>30", "age", "gender"]).tolist()
 features = data_bmi.columns.drop(["id", "BMI>30"]).tolist()
 features[0:10]
 X = data_bmi[features]
-
 
 # %% split into train and test
 X_train, X_test, y_train, y_test = train_test_split(
@@ -57,8 +56,6 @@ preprocess = ColumnTransformer(
     ]
 )
 
-
-
 # %% logistic lasso
 lasso = Pipeline(
     [
@@ -73,7 +70,6 @@ lasso = Pipeline(
         )
     ]
 )
-
 
 
 # %% Find best penalty using cross-validation
@@ -91,10 +87,7 @@ print("Best C:", search.best_params_["model__C"])
 print("CV ROC AUC:", search.best_score_)
 
 
-
-# %%
-# 6. Look at Lasso coefficients
-# --------------------------------------------------
+# %% Look at Lasso coefficients
 
 feature_names = search.best_estimator_[
     "preprocess"
@@ -118,9 +111,8 @@ coef_table = coef_table.sort_values(
 
 print(coef_table.head(20))
 
-# --------------------------------------------------
-# 7. Select top 5 genes
-# --------------------------------------------------
+
+# %% Select top 5 genes
 
 gene_results = coef_table[
     coef_table["feature"].str.startswith("numeric__")
@@ -146,9 +138,7 @@ selected_genes = (
 print("Selected genes:", selected_genes)
 
 
-# --------------------------------------------------
-# 8. Fit small final model
-# --------------------------------------------------
+# %% Fit small final model
 
 final_features = ["age", "gender"] + selected_genes
 
@@ -172,9 +162,7 @@ final_model.fit(
 )
 
 
-# --------------------------------------------------
-# 9. Evaluate on test data
-# --------------------------------------------------
+# %% Evaluate on test data
 
 probability = final_model.predict_proba(
     X_test[final_features]
@@ -185,23 +173,63 @@ prediction = final_model.predict(
 )
 
 print(
-    "Test ROC AUC:",
-    roc_auc_score(y_test, probability)
+    "Confusion matrix:\n",
+    confusion_matrix(y_test, prediction)
 )
 
 print(
-    "Test accuracy:",
-    accuracy_score(y_test, prediction)
+    f"Test accuracy: {accuracy_score(y_test, prediction):.2f}"
 )
 
 
-# --------------------------------------------------
-# 10. Save model
-# --------------------------------------------------
+print(
+    f"Test ROC AUC: {roc_auc_score(y_test, probability):.2f}"
+)
+
+# %% Save model and model metadata
 
 joblib.dump(
     final_model,
     "bmi_model.joblib"
 )
 
-print("Model saved")
+metadata = {
+    "model": "Logistic regression",
+    "outcome": "BMI>30",
+    "selected_genes": selected_genes,
+    "features": final_features,
+    "feature_selection": "Logistic Lasso",
+    "lasso_best_C": search.best_params_["model__C"],
+    "lasso_cv_roc_auc": search.best_score_,
+    "test_roc_auc": roc_auc_score(y_test, probability),
+    "test_accuracy": accuracy_score(y_test, prediction),
+    "random_state": 123
+}
+
+with open("model_metadata.json", "w") as f:
+    json.dump(metadata, f, indent=2)
+
+
+# %% save coefficients used by the final model
+
+final_feature_names = (
+    final_model["preprocess"]
+    .get_feature_names_out()
+)
+
+final_coefficients = (
+    final_model["model"]
+    .coef_[0]
+)
+
+model_coefficients = pd.DataFrame({
+    "feature": final_feature_names,
+    "coefficient": final_coefficients
+})
+
+model_coefficients.to_csv(
+    "model_coefficients.csv",
+    index=False
+)
+
+print(model_coefficients)

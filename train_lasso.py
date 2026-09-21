@@ -8,6 +8,7 @@ from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
+import json
 
 # %% load data
 data_bmi = pd.read_csv("data/data_bmi.tsv", sep="\t")

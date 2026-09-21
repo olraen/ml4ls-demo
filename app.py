@@ -75,3 +75,18 @@ if st.button("Predict"):
         f"{probability:.1%}"
     )
 
+st.markdown("### About the model")
+
+with st.expander("Model details"):
+    st.write("Feature selection: Logistic Lasso")
+    st.write("Final model: Logistic regression")
+    st.write("Selected genes:", ", ".join(selected_genes))
+
+st.link_button(
+    "View documentation on GitHub",
+    "https://github.com/olraen/ml4ls-demo"
+)
+
+st.caption(
+    "Teaching demonstration only."
+)

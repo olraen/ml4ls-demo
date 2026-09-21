@@ -1,0 +1,28 @@
+{
+  "model": "Logistic regression",
+  "outcome": "BMI>30",
+  "selected_genes": [
+    "POMC",
+    "DGLUCY",
+    "PCSK1",
+    "LAMP2",
+    "LEP"
+  ],
+  "features": [
+    "age",
+    "gender",
+    "POMC",
+    "DGLUCY",
+    "PCSK1",
+    "LAMP2",
+    "LEP"
+  ],
+  "feature_selection": "Logistic Lasso",
+  "lasso_best_C": 0.38566204211634725,
+  "lasso_cv_roc_auc": 0.7161952861952863,
+  "test_roc_auc": 0.7678571428571428,
+  "test_accuracy": 0.6538461538461539,
+  "random_state": 123
+}
+
+

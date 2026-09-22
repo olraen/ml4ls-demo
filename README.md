@@ -1,4 +1,5 @@
 # ml4ls-demo
+[![DOI](https://zenodo.org/badge/1380130357.svg)](https://doi.org/10.5281/zenodo.22895773)
 
 # BMI prediction with logistic Lasso
 

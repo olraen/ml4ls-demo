@@ -61,6 +61,3 @@ uv run streamlit run app.py
 
 Python dependencies and exact versions are recorded in `pyproject.toml` and `uv.lock`.
 
-## License
-
-MIT License.

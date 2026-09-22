@@ -2,7 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 
 title: "BMI>30 Prediction with Logistic Lasso"
-version: 1.0.0
+version: 1.0.1
+doi: 10.5281/zenodo.22895774
 
 authors:
   - family-names: "Dethlefsen"
@@ -10,4 +11,4 @@ authors:
 
 repository-code: "https://github.com/olraen/ml4ls-demo"
 
-date-released: 2026-09-21
+date-released: 2026-09-22
